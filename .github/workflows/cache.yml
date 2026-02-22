@@ -2,20 +2,30 @@ name: CI Cache Test
 
 on:
   push:
+    branches: [ "main" ]
   workflow_dispatch:
 
 jobs:
-  cache-test:
+  build:
     runs-on: ubuntu-latest
+
     steps:
       - uses: actions/checkout@v4
 
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
       - name: Cache dependencies
-        id: cache
+        id: cache-deps
         uses: actions/cache@v4
         with:
-          path: ~/.cache
+          path: ~/.cache/pip
           key: cache-b97c9ec
 
       - name: prime-cache-b97c9ec
-        run: echo "Cache hit = ${{ steps.cache.outputs.cache-hit }}"
+        run: echo "Cache hit? ${{ steps.cache-deps.outputs.cache-hit }}"
+
+      - name: Install dependencies
+        run: pip install fastapi requests pandas
